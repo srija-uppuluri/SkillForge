@@ -1,0 +1,22 @@
+{
+  "name": "skill-swap",
+  "version": "1.0.0",
+  "description": "Time-Based Learning Exchange Platform",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd client && npm install",
+    "server": "node server/index.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "node server/db/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "sql.js": "^1.10.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "concurrently": "^8.2.2"
+  }
+}
