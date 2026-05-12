@@ -1,4 +1,4 @@
-# Skill Swap — Time-Based Learning Exchange Platform
+# SkillForge — Time-Based Learning Exchange Platform
 
 Exchange skills using time credits instead of money. Teach 1 hour = earn 1 credit.
 
@@ -6,45 +6,30 @@ Exchange skills using time credits instead of money. Teach 1 hour = earn 1 credi
 
 - **Frontend:** React 18 + Tailwind CSS + React Router
 - **Backend:** Node.js + Express
-- **Database:** MySQL
+- **Database:** SQLite (better-sqlite3)
 - **Auth:** JWT + bcrypt
 
 ## Setup
 
 ### Prerequisites
 - Node.js 18+
-- MySQL 8+
 
-### 1. Configure Environment
-
-Copy `.env.example` to `.env` and update your MySQL credentials:
-
-```
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=skill_swap
-JWT_SECRET=your_secret_key
-PORT=5000
-```
-
-### 2. Install Dependencies
+### 1. Install Dependencies
 
 ```bash
-npm run install:all
+npm install
+cd client && npm install
 ```
 
-### 3. Create & Seed Database
-
-Make sure MySQL is running, then:
+### 2. Seed the Database
 
 ```bash
 npm run seed
 ```
 
-This creates the `skill_swap` database, all tables, and seeds sample data (5 users, 10 skills, requests, transactions, and feedback).
+This creates the `skill_swap.db` file with all tables and seeds sample data (5 users, 10 skills).
 
-### 4. Run the Application
+### 3. Run the Application
 
 ```bash
 npm run dev
@@ -53,17 +38,17 @@ npm run dev
 - Backend: http://localhost:5000
 - Frontend: http://localhost:3000
 
-### Demo Accounts
+## Demo Accounts
 
 All seeded users have password: `password123`
 
 | Name | Email | Credits |
 |------|-------|---------|
-| Alice Johnson | alice@example.com | 10 |
-| Bob Smith | bob@example.com | 8 |
-| Carol Williams | carol@example.com | 12 |
-| David Brown | david@example.com | 6 |
-| Eva Martinez | eva@example.com | 15 |
+| Alice Johnson | alice@example.com | 5 |
+| Bob Smith | bob@example.com | 5 |
+| Carol Williams | carol@example.com | 5 |
+| David Brown | david@example.com | 5 |
+| Eva Martinez | eva@example.com | 5 |
 
 ## API Endpoints
 
@@ -80,9 +65,10 @@ All seeded users have password: `password123`
 | GET | /api/requests/incoming | Yes | Incoming requests |
 | GET | /api/requests/outgoing | Yes | Outgoing requests |
 | POST | /api/requests | Yes | Create request |
-| PUT | /api/requests/:id/accept | Yes | Accept request |
+| PUT | /api/requests/:id/accept | Yes | Accept + schedule session |
 | PUT | /api/requests/:id/reject | Yes | Reject request |
-| PUT | /api/requests/:id/complete | Yes | Complete session (atomic) |
+| PUT | /api/requests/:id/start | Yes | Start video session |
+| PUT | /api/requests/:id/confirm | Yes | Confirm session complete |
 | GET | /api/transactions | Yes | Transaction history |
 | POST | /api/feedback | Yes | Submit feedback |
 | GET | /api/feedback/teacher/:id | No | Get teacher reviews |
@@ -94,6 +80,18 @@ All seeded users have password: `password123`
 
 - New users start with 5 credits
 - Learner must have sufficient credits to send a request
-- On session completion: atomic DB transaction debits learner, credits teacher
-- Status flow: Pending → Accepted → Completed (or Rejected)
+- Teacher accepts and schedules a date/time for the session
+- Video session starts at the scheduled time
+- Both teacher AND learner must confirm session is complete
+- Credits transfer atomically only when both parties confirm
+- Status flow: Pending → Scheduled → In Progress → Completed (or Rejected)
 - One feedback entry per completed request (rating 1-5 + comments)
+
+## Features
+
+- Dark/Light mode toggle
+- Video session interface with camera, mic, chat
+- Session scheduling with date/time picker
+- Mutual completion confirmation (anti-fraud)
+- Animated UI with Tailwind CSS
+- Responsive design (mobile + desktop)
