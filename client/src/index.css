@@ -12,32 +12,73 @@
 }
 
 @layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #1f6bf5 0%, #7c3aed 50%, #e33bff 100%);
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, #3b8fff, #e33bff);
   }
+
   .card {
     @apply bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm;
   }
+
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary-200 dark:hover:border-primary-700;
   }
+
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2.5 rounded-xl font-medium hover:from-primary-600 hover:to-accent-600 transition-all duration-300 hover:shadow-lg active:scale-95;
+    @apply bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2.5 rounded-xl font-medium 
+           hover:from-primary-600 hover:to-accent-600 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25
+           active:scale-95;
   }
+
   .btn-secondary {
-    @apply border-2 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-6 py-2.5 rounded-xl font-medium hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all duration-300 active:scale-95;
+    @apply border-2 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-6 py-2.5 rounded-xl font-medium
+           hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 active:scale-95;
   }
+
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white;
+    @apply w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl 
+           focus:ring-2 focus:ring-primary-400 focus:border-transparent outline-none 
+           transition-all duration-200 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white
+           hover:border-primary-200 dark:hover:border-primary-600;
   }
+
   .badge {
     @apply text-xs px-3 py-1 rounded-full font-medium;
   }
+
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in;
   }
+
+  .section-title {
+    @apply text-3xl font-bold text-gray-900 dark:text-white mb-8;
+  }
+
   .stat-card {
     @apply card p-6 card-hover;
   }
+
+  .text-muted {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700 rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-600;
 }

@@ -1,27 +1,33 @@
 require('dotenv').config();
-const initSqlJs = require('sql.js');
+const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, '..', '..', 'skill_swap.db');
+const dbPath = path.join(__dirname, '..', '..', 'skill_swap.db');
 
-async function seed() {
-  const SQL = await initSqlJs();
+// Create DB if it doesn't exist
+const dbExists = fs.existsSync(dbPath);
+const db = new Database(dbPath);
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
 
-  // Delete existing DB
-  if (fs.existsSync(DB_PATH)) fs.unlinkSync(DB_PATH);
+// Create tables
+const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
+db.exec(schema);
 
-  const db = new SQL.Database();
-  db.run('PRAGMA foreign_keys = ON');
+// Check if users table is empty
+const userCount = db.prepare('SELECT COUNT(*) AS count FROM users').get().count;
 
-  // Create tables
-  const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  db.run(schema);
+if (userCount === 0) {
+  console.log('Users table is empty. Seeding default users...');
 
   const hashedPassword = bcrypt.hashSync('password123', 10);
 
-  // Seed users
+  const insertUser = db.prepare(
+    'INSERT INTO users (name, email, phone, password, balance_credits) VALUES (?, ?, ?, ?, ?)'
+  );
+
   const users = [
     ['Alice Johnson', 'alice@example.com', '555-0101', hashedPassword, 5.00],
     ['Bob Smith', 'bob@example.com', '555-0102', hashedPassword, 5.00],
@@ -29,11 +35,28 @@ async function seed() {
     ['David Brown', 'david@example.com', '555-0104', hashedPassword, 5.00],
     ['Eva Martinez', 'eva@example.com', '555-0105', hashedPassword, 5.00]
   ];
-  for (const u of users) {
-    db.run('INSERT INTO users (name, email, phone, password, balance_credits) VALUES (?, ?, ?, ?, ?)', u);
-  }
 
-  // Seed skills
+  const insertUsers = db.transaction(() => {
+    for (const user of users) {
+      insertUser.run(...user);
+    }
+  });
+  insertUsers();
+  console.log('5 default users created (password: password123).');
+} else {
+  console.log(`Users table already has ${userCount} records. Skipping user seed.`);
+}
+
+// Check if skills table is empty
+const skillCount = db.prepare('SELECT COUNT(*) AS count FROM skills').get().count;
+
+if (skillCount === 0) {
+  console.log('Skills table is empty. Seeding default skills...');
+
+  const insertSkill = db.prepare(
+    'INSERT INTO skills (skill_name, category, description, user_id) VALUES (?, ?, ?, ?)'
+  );
+
   const skills = [
     ['Mathematics', 'Education', 'Algebra, Calculus, and Statistics tutoring', 1],
     ['Guitar', 'Music', 'Beginner to intermediate acoustic and electric guitar', 1],
@@ -46,15 +69,17 @@ async function seed() {
     ['Photography', 'Creative Arts', 'Mobile and DSLR photography, composition, and editing', 5],
     ['French Language', 'Language', 'Beginner French for travel and everyday conversation', 5]
   ];
-  for (const s of skills) {
-    db.run('INSERT INTO skills (skill_name, category, description, user_id) VALUES (?, ?, ?, ?)', s);
-  }
 
-  // Save
-  const data = db.export();
-  fs.writeFileSync(DB_PATH, Buffer.from(data));
-  db.close();
-  console.log('Database seeded successfully! 5 users + 10 skills created.');
+  const insertSkills = db.transaction(() => {
+    for (const skill of skills) {
+      insertSkill.run(...skill);
+    }
+  });
+  insertSkills();
+  console.log('10 default skills created.');
+} else {
+  console.log(`Skills table already has ${skillCount} records. Skipping skill seed.`);
 }
 
-seed().catch(err => { console.error('Seed failed:', err); process.exit(1); });
+db.close();
+console.log('Seed complete!');

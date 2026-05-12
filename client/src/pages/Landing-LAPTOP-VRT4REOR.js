@@ -17,14 +17,14 @@ function Landing() {
           <div className="animate-fade-in-down">
             {/* SkillForge Logo + Name — highlighted */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-2xl animate-float">
-                <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-2xl">
+                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" />
                   <path d="M2 17l10 5 10-5" />
                   <path d="M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <h2 className="text-5xl sm:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg" style={{ textShadow: '0 4px 30px rgba(255,255,255,0.3)' }}>
+              <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
                 SkillForge
               </h2>
             </div>

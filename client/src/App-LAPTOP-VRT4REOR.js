@@ -22,7 +22,6 @@ function PrivateRoute({ children }) {
 
 function AppRoutes() {
   const { user } = useAuth();
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Navbar />

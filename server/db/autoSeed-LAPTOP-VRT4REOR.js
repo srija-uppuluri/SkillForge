@@ -1,22 +1,11 @@
 const bcrypt = require('bcryptjs');
-const db = require('./connection');
 
-/**
- * Auto-seeds the database on first launch if tables are empty.
- * Safe to call on every server start — only inserts if no data exists.
- */
-function autoSeed() {
-  // Seed users if empty
-  const userCount = db.prepare('SELECT COUNT(*) AS count FROM users').get().count;
+async function autoSeed(db, saveDb) {
+  const userCount = db.exec('SELECT COUNT(*) as count FROM users')[0]?.values[0][0] || 0;
 
   if (userCount === 0) {
-    console.log('[AutoSeed] Users table empty — seeding 5 default users...');
+    console.log('[AutoSeed] Seeding users...');
     const hashedPassword = bcrypt.hashSync('password123', 10);
-
-    const insertUser = db.prepare(
-      'INSERT INTO users (name, email, phone, password, balance_credits) VALUES (?, ?, ?, ?, ?)'
-    );
-
     const users = [
       ['Alice Johnson', 'alice@example.com', '555-0101', hashedPassword, 5.00],
       ['Bob Smith', 'bob@example.com', '555-0102', hashedPassword, 5.00],
@@ -24,25 +13,15 @@ function autoSeed() {
       ['David Brown', 'david@example.com', '555-0104', hashedPassword, 5.00],
       ['Eva Martinez', 'eva@example.com', '555-0105', hashedPassword, 5.00]
     ];
-
-    const seedUsers = db.transaction(() => {
-      for (const user of users) {
-        insertUser.run(...user);
-      }
-    });
-    seedUsers();
+    for (const u of users) {
+      db.run('INSERT INTO users (name, email, phone, password, balance_credits) VALUES (?, ?, ?, ?, ?)', u);
+    }
   }
 
-  // Seed skills if empty
-  const skillCount = db.prepare('SELECT COUNT(*) AS count FROM skills').get().count;
+  const skillCount = db.exec('SELECT COUNT(*) as count FROM skills')[0]?.values[0][0] || 0;
 
   if (skillCount === 0) {
-    console.log('[AutoSeed] Skills table empty — seeding 10 default skills...');
-
-    const insertSkill = db.prepare(
-      'INSERT INTO skills (skill_name, category, description, user_id) VALUES (?, ?, ?, ?)'
-    );
-
+    console.log('[AutoSeed] Seeding skills...');
     const skills = [
       ['Mathematics', 'Education', 'Algebra, Calculus, and Statistics tutoring', 1],
       ['Guitar', 'Music', 'Beginner to intermediate acoustic and electric guitar', 1],
@@ -55,16 +34,13 @@ function autoSeed() {
       ['Photography', 'Creative Arts', 'Mobile and DSLR photography, composition, and editing', 5],
       ['French Language', 'Language', 'Beginner French for travel and everyday conversation', 5]
     ];
-
-    const seedSkills = db.transaction(() => {
-      for (const skill of skills) {
-        insertSkill.run(...skill);
-      }
-    });
-    seedSkills();
+    for (const s of skills) {
+      db.run('INSERT INTO skills (skill_name, category, description, user_id) VALUES (?, ?, ?, ?)', s);
+    }
   }
 
   if (userCount === 0 || skillCount === 0) {
+    saveDb();
     console.log('[AutoSeed] Done.');
   }
 }
